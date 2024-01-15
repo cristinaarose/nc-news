@@ -19,7 +19,6 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then((res) => {
         const { topics } = res.body;
-
         expect(Array.isArray(topics)).toBe(true);
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
