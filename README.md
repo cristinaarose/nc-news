@@ -1,3 +1,3 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+To run these databases locally, npm install dotenv and create two files, .env.test and .env.development containing the database names to successfully connect the two databases locally.
