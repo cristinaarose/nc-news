@@ -86,3 +86,45 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("GET /api/articles", () => {
+  test("GET /api retrieves data about all endpoints", () => {
+    return supertest(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+
+        expect(articles.length > 0).toBe(true);
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+
+  test("200: SORT data in descending order", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("400: Invalid sort by query)", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=nonsense")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Invalid sort by query");
+      });
+  });
+});
