@@ -26,3 +26,14 @@ exports.fetchArticleData = (sort_by = "created_at") => {
     return res.rows;
   });
 };
+
+exports.fetchArticleCommentData = (article_id, sort_by = "created_at") => {
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
+      [article_id]
+    )
+    .then((result) => {
+      return result.rows;
+    });
+};
