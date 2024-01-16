@@ -54,6 +54,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then((res) => {
         const { article } = res.body;
+
         expect(article).toHaveProperty("author", expect.any(String));
         expect(article).toHaveProperty("title", expect.any(String));
         expect(article).toHaveProperty("article_id");
@@ -125,6 +126,47 @@ describe("GET /api/articles", () => {
       .then((res) => {
         const { msg } = res.body;
         expect(msg).toBe("Invalid sort by query");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: return all comments for a specific article", () => {
+    return supertest(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("article_id");
+          expect(comment).toHaveProperty("created_at");
+        });
+      });
+  });
+  test("200: SORT comments in descending order", () => {
+    return supertest(app)
+      .get("/api/articles/1/comments")
+
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("400: responds with appropriate message when sent non-existent article id", () => {
+    return supertest(app)
+      .get("/api/articles/not_an_id/comments")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+
+        expect(msg).toBe("Bad request");
       });
   });
 });
