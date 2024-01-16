@@ -46,3 +46,43 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: GET /api/articles/:article_id returns article from given id", () => {
+    return supertest(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((res) => {
+        const { article } = res.body;
+        //console.log(article);
+        expect(article).toHaveProperty("author", expect.any(String));
+        expect(article).toHaveProperty("title", expect.any(String));
+        expect(article).toHaveProperty("article_id", expect.any(Number));
+        expect(article).toHaveProperty("body", expect.any(String));
+        expect(article).toHaveProperty("topic", expect.any(String));
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("article_img_url", expect.any(String));
+      });
+  });
+  test("400: responds with appropriate message when sent non-existent article id", () => {
+    return supertest(app)
+      .get("/api/articles/not_an_id")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("404: responds with appropriate message when sent a valid but non-existent article id", () => {
+    return supertest(app)
+      .get("/api/articles/200")
+      .expect(404)
+      .then((res) => {
+        const { msg } = res.body;
+
+        expect(msg).toBe("Not found");
+      });
+  });
+});
