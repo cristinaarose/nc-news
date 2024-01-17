@@ -8,6 +8,7 @@ const {
   getArticles,
   getArticleComments,
   postComment,
+  patchArticle,
 } = require("./controllers/articles.controllers.js");
 const { errorHandling } = require("./error-handling.js");
 const app = express();
@@ -26,37 +27,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
+app.patch("/api/articles/:article_id", patchArticle);
+
 errorHandling(app);
-// app.use((err, req, res, next) => {
-//   if (err.code === "23503") {
-//     res.status(404).send({ msg: "Not found" });
-//   } else {
-//     next(err);
-//   }
-// });
-
-// app.use((err, req, res, next) => {
-//   if (err.msg === "Not found") {
-//     res.status(404).send({ msg: err.msg });
-//   } else {
-//     next(err);
-//   }
-// });
-
-// app.use((err, req, res, next) => {
-//   if (err.msg && err.status) {
-//     res.status(err.status).send({ msg: err.msg });
-//   } else {
-//     next(err);
-//   }
-// });
-
-// app.use((err, req, res, next) => {
-//   if (err.code === "22P02") {
-//     res.status(400).send({ msg: "Bad request" });
-//   } else {
-//     next(err);
-//   }
-// });
 
 module.exports = app;
