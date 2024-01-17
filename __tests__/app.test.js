@@ -299,3 +299,9 @@ describe("PATCH api/articles/article_id", () => {
       });
   });
 });
+
+// describe.only("DELETE /api/comments/:comment_id", () => {
+//   test("204: removes correct comment and responds with no content", () => {
+//     return supertest(app).delete("/api/comments/11").expect(204);
+//   });
+// });
