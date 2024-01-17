@@ -3,6 +3,7 @@ const {
   fetchArticleData,
   fetchArticleCommentData,
   insertCommentData,
+  updateArticle,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -47,6 +48,19 @@ exports.postComment = (req, res, next) => {
   insertCommentData(newComment, article_id)
     .then((commentData) => {
       res.status(201).send({ comment: commentData });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  updateArticle(article_id, inc_votes)
+    .then((updatedArticleData) => {
+      res.status(200).send({ article: updatedArticleData });
     })
     .catch((err) => {
       next(err);
