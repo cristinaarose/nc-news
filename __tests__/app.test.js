@@ -170,3 +170,40 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST api/articles/:article_id/comments", () => {
+  test("201: POST comment returns the posted object containing all required properties", () => {
+    const newComment = {
+      author: "butter_bridge",
+      body: "commentTest",
+    };
+    return supertest(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then((res) => {
+        const { comment } = res.body;
+
+        expect(comment).toHaveProperty("comment_id", expect.any(Number));
+        expect(comment).toHaveProperty("body", expect.any(String));
+        expect(comment).toHaveProperty("article_id", expect.any(Number));
+
+        expect(comment).toHaveProperty("author", expect.any(String));
+        expect(comment).toHaveProperty("votes", expect.any(Number));
+        expect(comment).toHaveProperty("created_at", expect.any(String));
+      });
+  });
+  test("400: returns appropriate response when posting a comment with invalid structure", () => {
+    const newComment = {
+      author: "butter_bridge",
+    };
+    return supertest(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Invalid data entry");
+      });
+  });
+});
