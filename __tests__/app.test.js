@@ -89,14 +89,14 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("GET /api retrieves data about all endpoints", () => {
+  test("GET /api retrieves data about all articles", () => {
     return supertest(app)
       .get("/api/articles")
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
 
-        expect(articles.length > 0).toBe(true);
+        expect(articles.length === 13 || articles.length > 0).toBe(true);
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
