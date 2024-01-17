@@ -37,3 +37,23 @@ exports.fetchArticleCommentData = (article_id, sort_by = "created_at") => {
       return result.rows;
     });
 };
+
+exports.insertCommentData = (newComment, article_id) => {
+  if (
+    newComment.author === undefined ||
+    newComment.body === undefined ||
+    article_id === undefined
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid data entry" });
+  }
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id, created_at, votes) 
+        VALUES ($1, $2, $3 ,$4, $5) RETURNING*;`,
+
+      [newComment.author, newComment.body, article_id, new Date(), 0]
+    )
+    .then((newComment) => {
+      return newComment.rows[0];
+    });
+};
