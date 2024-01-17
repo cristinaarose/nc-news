@@ -186,7 +186,7 @@ describe("POST api/articles/:article_id/comments", () => {
 
         expect(comment).toHaveProperty("comment_id", expect.any(Number));
         expect(comment).toHaveProperty("body", expect.any(String));
-        expect(comment).toHaveProperty("article_id", expect.any(Number));
+        expect(comment).toHaveProperty("article_id", 1);
 
         expect(comment).toHaveProperty("author", expect.any(String));
         expect(comment).toHaveProperty("votes", expect.any(Number));
@@ -204,6 +204,48 @@ describe("POST api/articles/:article_id/comments", () => {
       .then((res) => {
         const { msg } = res.body;
         expect(msg).toBe("Invalid data entry");
+      });
+  });
+  test("400: returns appropriate response when posting a comment to an invalid article_id", () => {
+    const newComment = {
+      author: "butter_bridge",
+      body: "commentTest",
+    };
+    return supertest(app)
+      .post("/api/articles/not-an-id/comments")
+      .send(newComment)
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("404: returns appropriate response when posting a comment to an non-existent but valid article_id", () => {
+    const newComment = {
+      author: "butter_bridge",
+      body: "commentTest",
+    };
+    return supertest(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Not found");
+      });
+  });
+  test("404: returns appropriate response when posting a comment to a valid article but the username does not exist", () => {
+    const newComment = {
+      author: "non-existent-username",
+      body: "commentTest",
+    };
+    return supertest(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Not found");
       });
   });
 });
