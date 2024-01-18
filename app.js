@@ -10,6 +10,7 @@ const {
   postComment,
   patchArticle,
 } = require("./controllers/articles.controllers.js");
+const { deleteComment } = require("./controllers/comments.controllers.js");
 const { errorHandling } = require("./error-handling.js");
 const app = express();
 
@@ -28,6 +29,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 errorHandling(app);
 

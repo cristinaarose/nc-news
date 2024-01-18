@@ -299,3 +299,27 @@ describe("PATCH api/articles/article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: removes correct comment and responds with no content", () => {
+    return supertest(app).delete("/api/comments/11").expect(204);
+  });
+  test("404: returns appropriate response when sending a delete request with a valid but non-existent comment_id", () => {
+    return supertest(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Not found");
+      });
+  });
+  test("400: returns appropriate response when sending a delete request with an invalid comment_id", () => {
+    return supertest(app)
+      .delete("/api/comments/abc")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
