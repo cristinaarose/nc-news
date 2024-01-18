@@ -331,7 +331,7 @@ describe("GET /api/users", () => {
       .expect(200)
       .then((res) => {
         const { users } = res.body;
-
+        expect(users.length > 0).toBe(true);
         users.forEach((user) => {
           expect(user).toHaveProperty("username", expect.any(String));
           expect(user).toHaveProperty("name", expect.any(String));
