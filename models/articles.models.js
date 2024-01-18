@@ -11,10 +11,23 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticleData = (sort_by = "created_at") => {
+exports.fetchArticleData = (sort_by = "created_at", topic) => {
   let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,  COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id`;
 
   const allowedQuerySort = ["created_at"];
+  const allowedTopics = ["mitch", "cats"];
+
+  if (topic === "") {
+    query = `SELECT * FROM articles`;
+    return db.query(query).then((res) => {
+      return res.rows;
+    });
+  }
+  if (!allowedTopics.includes(topic) && topic !== undefined) {
+    return Promise.reject({ status: 400, msg: "Topic does not exist" });
+  } else if (allowedTopics.includes(topic) && topic !== undefined) {
+    query = `SELECT* FROM articles WHERE topic = '${topic}'`;
+  }
 
   if (!allowedQuerySort.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort by query" });
