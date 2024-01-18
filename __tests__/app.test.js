@@ -116,6 +116,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
+        //console.log(articles);
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
@@ -348,14 +349,15 @@ describe("GET /api/articles?topic=", () => {
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
-        expect(articles.length > 0).toBe(true);
+
+        expect(articles.length === 12).toBe(true);
 
         articles.forEach((article) => {
           expect(article).toHaveProperty("topic", "mitch");
           expect(article).toHaveProperty("article_id", expect.any(Number));
           expect(article).toHaveProperty("title", expect.any(String));
           expect(article).toHaveProperty("author", expect.any(String));
-          expect(article).toHaveProperty("body", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
           expect(article).toHaveProperty("created_at", expect.any(String));
           expect(article).toHaveProperty("votes", expect.any(Number));
           expect(article).toHaveProperty("article_img_url", expect.any(String));
@@ -368,7 +370,7 @@ describe("GET /api/articles?topic=", () => {
       .expect(400)
       .then((res) => {
         const { msg } = res.body;
-        expect(msg).toBe("Topic does not exist");
+        expect(msg).toBe("Topic does not exist or have any related articles");
       });
   });
   test("200: returns all articles when the query is omitted", () => {
@@ -377,6 +379,7 @@ describe("GET /api/articles?topic=", () => {
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
+
         expect(articles.length > 0).toBe(true);
 
         articles.forEach((article) => {
@@ -384,11 +387,20 @@ describe("GET /api/articles?topic=", () => {
           expect(article).toHaveProperty("article_id", expect.any(Number));
           expect(article).toHaveProperty("title", expect.any(String));
           expect(article).toHaveProperty("author", expect.any(String));
-          expect(article).toHaveProperty("body", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
           expect(article).toHaveProperty("created_at", expect.any(String));
           expect(article).toHaveProperty("votes", expect.any(Number));
           expect(article).toHaveProperty("article_img_url", expect.any(String));
         });
+      });
+  });
+  test("400: returns appropriate response when sending a get request with a topic that contains no articles", () => {
+    return supertest(app)
+      .get("/api/articles?topic=paper")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Topic does not exist or have any related articles");
       });
   });
 });

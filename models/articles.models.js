@@ -15,18 +15,29 @@ exports.fetchArticleData = (sort_by = "created_at", topic) => {
   let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,  COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id`;
 
   const allowedQuerySort = ["created_at"];
-  const allowedTopics = ["mitch", "cats"];
 
-  if (topic === "") {
-    query = `SELECT * FROM articles`;
+  if (!topic && sort_by === undefined) {
     return db.query(query).then((res) => {
       return res.rows;
     });
   }
-  if (!allowedTopics.includes(topic) && topic !== undefined) {
-    return Promise.reject({ status: 400, msg: "Topic does not exist" });
-  } else if (allowedTopics.includes(topic) && topic !== undefined) {
-    query = `SELECT* FROM articles WHERE topic = '${topic}'`;
+
+  if (topic) {
+    return db
+      .query(
+        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,  COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE topic = $1 GROUP BY articles.article_id ORDER BY created_at DESC`,
+        [topic]
+      )
+      .then((res) => {
+        if (res.rows.length === 0) {
+          return Promise.reject({
+            status: 400,
+            msg: "Topic does not exist or have any related articles",
+          });
+        } else {
+          return res.rows;
+        }
+      });
   }
 
   if (!allowedQuerySort.includes(sort_by)) {
