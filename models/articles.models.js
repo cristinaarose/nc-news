@@ -56,7 +56,6 @@ exports.insertCommentData = (newComment, article_id) => {
     .then((newComment) => {
       return newComment.rows[0];
     });
-  n;
 };
 
 exports.updateArticle = (article_id, inc_votes) => {

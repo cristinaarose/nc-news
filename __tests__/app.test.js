@@ -262,13 +262,13 @@ describe("PATCH api/articles/article_id", () => {
       .then((res) => {
         const { article } = res.body;
 
-        expect(article).toHaveProperty("article_id", expect.any(Number));
+        expect(article).toHaveProperty("article_id", 1);
         expect(article).toHaveProperty("title", expect.any(String));
         expect(article).toHaveProperty("topic", expect.any(String));
         expect(article).toHaveProperty("author", expect.any(String));
         expect(article).toHaveProperty("body", expect.any(String));
         expect(article).toHaveProperty("created_at", expect.any(String));
-        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("votes", 110);
         expect(article).toHaveProperty("article_img_url", expect.any(String));
       });
   });
@@ -285,7 +285,7 @@ describe("PATCH api/articles/article_id", () => {
         expect(msg).toBe("Not found");
       });
   });
-  test("400: returns appropriate response when sending a patch with  an invalid article_id", () => {
+  test("400: returns appropriate response when sending a patch with  a valid article_id but invalid value of votes", () => {
     const newVotes = {
       inc_votes: "abc",
     };
