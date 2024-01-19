@@ -403,4 +403,10 @@ describe("GET /api/articles?topic=", () => {
         expect(msg).toBe("Topic does not exist or have any related articles");
       });
   });
+  test("200: returns appropriate response when sending a get request with a topic is valid", () => {
+    return supertest(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((res) => {});
+  });
 });
