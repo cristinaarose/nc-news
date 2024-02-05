@@ -6,6 +6,8 @@ const {
   updateArticle,
 } = require("../models/articles.models");
 
+const { checkTopicExists } = require("../models/topics.models");
+
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
 
@@ -23,13 +25,18 @@ exports.getArticles = (req, res, next) => {
 
   const { topic } = req.query;
 
-  fetchArticleData(sort_by, topic)
-    .then((articleData) => {
-      res.status(200).send({ articles: articleData });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  checkTopicExists(topic).then((res) => {
+    console.log("res=", res);
+    if (res === true) {
+      fetchArticleData(sort_by, topic)
+        .then((articleData) => {
+          res.status(200).send({ articles: articleData });
+        })
+        .catch((err) => {
+          next(err);
+        });
+    }
+  });
 };
 
 exports.getArticleComments = (req, res, next) => {

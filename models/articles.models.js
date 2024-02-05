@@ -34,8 +34,8 @@ exports.fetchArticleData = (sort_by = "created_at", topic) => {
       .then((res) => {
         if (res.rows.length === 0) {
           return Promise.reject({
-            status: 400,
-            msg: "Topic does not exist or have any related articles",
+            status: 200,
+            msg: "Topic does not have any related articles",
           });
         } else {
           return res.rows;
