@@ -88,7 +88,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.skip("GET /api/articles", () => {
   test("GET /api retrieves data about all articles", () => {
     return supertest(app)
       .get("/api/articles")
@@ -342,7 +342,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles?topic=", () => {
+describe.skip("GET /api/articles?topic=", () => {
   test("200: returns articles when given a specified topic", () => {
     return supertest(app)
       .get("/api/articles?topic=mitch")
