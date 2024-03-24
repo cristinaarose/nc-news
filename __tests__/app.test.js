@@ -116,7 +116,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
-        //console.log(articles);
+
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
@@ -126,7 +126,7 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then((res) => {
         const { msg } = res.body;
-        expect(msg).toBe("Invalid sort by query");
+        expect(msg).toBe("Bad request");
       });
   });
 });
@@ -367,10 +367,10 @@ describe("GET /api/articles?topic=", () => {
   test("400: returns appropriate response when sending a get request with a topic that doesnt exist", () => {
     return supertest(app)
       .get("/api/articles?topic=non_existent_topic")
-      .expect(400)
+      .expect(404)
       .then((res) => {
         const { msg } = res.body;
-        expect(msg).toBe("Topic does not exist or have any related articles");
+        expect(msg).toBe("Not found");
       });
   });
   test("200: returns all articles when the query is omitted", () => {
@@ -397,10 +397,10 @@ describe("GET /api/articles?topic=", () => {
   test("400: returns appropriate response when sending a get request with a topic that contains no articles", () => {
     return supertest(app)
       .get("/api/articles?topic=paper")
-      .expect(400)
+      .expect(404)
       .then((res) => {
         const { msg } = res.body;
-        expect(msg).toBe("Topic does not exist or have any related articles");
+        expect(msg).toBe("Not found");
       });
   });
   test("200: returns appropriate response when sending a get request with a topic is valid", () => {
@@ -411,6 +411,82 @@ describe("GET /api/articles?topic=", () => {
   });
 });
 
+describe("GET /api/articles?order=", () => {
+  test("200: returns articles when sorted by a specific order", () => {
+    return supertest(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("article_id", expect.any(Number));
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+
+          expect(articles).toBeSortedBy("created_at", { ascending: true });
+        });
+      });
+  });
+  test("400: returns appropriate response when sending a get request with an order that doesnt exist", () => {
+    return supertest(app)
+      .get("/api/articles?order=bad_order")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("400: return bad request when params missing", () => {
+    return supertest(app)
+      .get("/api/articles?order=")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("GET /api/articles?sort_by=", () => {
+  test("200: returns articles when sorted by a specific column(author,votes etc)", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("article_id", expect.any(Number));
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+      });
+  });
+  test("400: returns appropriate response when sending a get request with a sort_by that doesnt exist", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=not_valid")
+      .expect(400)
+      .then((res) => {
+        const { msg } = res.body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("200: GET /api/articles/:article_id returns article from given id", () => {
     return supertest(app)
@@ -418,7 +494,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then((res) => {
         const { article } = res.body;
-        console.log("article=", article);
+
         expect(article).toHaveProperty("author", expect.any(String));
         expect(article).toHaveProperty("title", expect.any(String));
         expect(article).toHaveProperty("article_id");
