@@ -34,6 +34,13 @@ function errorHandling(app) {
       next(err);
     }
   });
+
+  //bad column name
+  app.use((err, req, res, nest) => {
+    if (err.code === "42703") {
+      res.status(400).send({ msg: "Bad request" });
+    }
+  });
 }
 
 module.exports = { errorHandling };
